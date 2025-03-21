@@ -1,120 +1,96 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import backgroundImage from './SRM.jpg';
 import srmLogo from './SRMlogo.png';
+import { FaTrophy, FaUserFriends, FaChartLine, FaNewspaper, FaEnvelope } from 'react-icons/fa';
 
 const LandingPage = () => {
     const navigate = useNavigate();
+    const [showDropdown, setShowDropdown] = useState(false);
+    const dropdownRef = useRef(null);
 
-    const options = [
-        {
-            title: 'Student Login',
-            description: 'Access your personal performance dashboard',
-            features: [
-                '🌟 View your current standing',
-                '📅 Submit events to boost your rank',
-                '🏆 Track your performance over time',
-            ],
-            buttonLabel: 'Enter as Student',
-            onClick: () => navigate('/student-login'),
-            hoverColor: 'hover:bg-blue-50',
-            buttonColor: 'bg-blue-500 hover:bg-blue-600',
-            icon: '🧑‍🎓',
-        },
-        {
-            title: 'Teacher Login',
-            description: 'Manage and monitor student activities',
-            features: [
-                '📊 View detailed reports',
-                '📈 Monitor student performance over time',
-                '🔎 Review submitted events and their impact',
-            ],
-            buttonLabel: 'Enter as Teacher',
-            onClick: () => navigate('/teacher-login'),
-            hoverColor: 'hover:bg-yellow-50',
-            buttonColor: 'bg-yellow-500 hover:bg-yellow-600',
-            icon: '👩‍🏫',
-        },
-        {
-            title: 'Admin Login',
-            description: 'Full platform administration access',
-            features: [
-                '⚙️ Administer the entire leaderboard platform',
-                '📊 View analytics and reports',
-                '🔧 Manage user access and event submissions',
-            ],
-            buttonLabel: 'Enter as Admin',
-            onClick: () => navigate('/admin-login'),
-            hoverColor: 'hover:bg-green-50',
-            buttonColor: 'bg-green-500 hover:bg-green-600',
-            icon: '⚙️',
-        },
-    ];
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    const handleLoginClick = (role) => {
+        navigate(`/${role}-login`); // Dynamic navigation
+        setShowDropdown(false);
+    };
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center justify-center py-10 pb-20"
-            style={{
-                backgroundImage: `url(${backgroundImage})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-            }}
-        >
-            {/* SRM Logo */}
-            <div className="absolute top-0 left-0 p-3 mb-6">
-                <img src={srmLogo} alt="SRM Institute Logo" className="h-16" />
-            </div>
-
-            {/* Platform Name */}
-            <h1 
-                className="text-xl mt-12 font-bold text-white p-4 bg-black bg-opacity-50 text-center mb-6 m-3 rounded-lg" 
-                aria-label="SRM Institute of Science and Technology Leaderboard"
-            >
-                Welcome to the SRM Institute of Science and Technology Leaderboard
-            </h1>
-
-            {/* Login Options */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-4xl">
-                {options.map((option, index) => (
-                    <div 
-                        key={index} 
-                        className={`login-card bg-white bg-opacity-70 lg:bg-opacity-100 shadow-md rounded-lg p-4 m-3 flex flex-col ${option.hoverColor}`}
-                    >
-                        {/* Icon */}
-                        <div className="text-5xl flex justify-center mb-2">
-                            {option.icon}
-                        </div>
-
-                        {/* Title */}
-                        <h2 className="text-xl font-semibold text-center mb-2">
-                            {option.title}
-                        </h2>
-
-                        {/* Description */}
-                        <p className="text-black text-center mb-4 text-lg">
-                            {option.description}
-                        </p>
-
-                        {/* Features */}
-                        <ul className="flex flex-col mb-4">
-                            {option.features.map((feature, i) => (
-                                <li key={i} className="text-black text-center">
-                                    {feature}
-                                </li>
-                            ))}
-                        </ul>
-
-                        {/* Button */}
+        <div className="min-h-screen flex flex-col items-center bg-gray-100 relative">
+            {/* Navbar */}
+            <nav className="w-full flex justify-between items-center py-4 px-10 bg-white shadow-md relative z-50">
+                <img src={srmLogo} alt="SRM Logo" className="h-10" />
+                <div className="space-x-6 relative flex items-center">
+                    <a href="#about" className="hover:text-yellow-500">About</a>
+                    <a href="#leaderboard" className="hover:text-yellow-500">Leaderboard</a>
+                    <a href="#features" className="hover:text-yellow-500">Features</a>
+                    <div className="relative inline-block" ref={dropdownRef}>
                         <button 
-                            onClick={option.onClick} 
-                            className={`mt-auto text-white py-2 rounded hover:opacity-90 transition duration-200 ${option.buttonColor}`}
-                        >
-                            {option.buttonLabel}    
+                            onClick={() => setShowDropdown(!showDropdown)}
+                            className="bg-yellow-500 text-black px-4 py-2 rounded-lg hover:bg-yellow-600 transition duration-300">
+                            Login
                         </button>
+                        {showDropdown && (
+                            <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg z-50 border border-gray-200">
+                                <button onClick={() => handleLoginClick('student')} className="block px-4 py-2 hover:bg-gray-200 w-full text-left">Student</button>
+                                <button onClick={() => handleLoginClick('teacher')} className="block px-4 py-2 hover:bg-gray-200 w-full text-left">Teacher</button>
+                                <button onClick={() => handleLoginClick('admin')} className="block px-4 py-2 hover:bg-gray-200 w-full text-left">Admin</button>
+                            </div>
+                        )}
                     </div>
-                ))}
+                </div>
+            </nav>
+
+            {/* Hero Section */}
+            <div className="relative w-full h-screen flex flex-col justify-center items-center text-white text-center z-10"
+                style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                <div className="bg-black bg-opacity-50 p-6 rounded-lg">
+                    <h1 className="text-5xl font-bold">Compete. Conquer. Climb the Ranks!</h1>
+                    <p className="text-xl mt-4">The journey of a thousand miles begins with a single step.</p>
+                </div>
             </div>
+
+            {/* Features Section */}
+            <div id="features" className="w-4/5 max-w-4xl text-center py-10">
+                <h2 className="text-3xl font-bold">Key Features</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    {[{ icon: FaChartLine, text: "Real-time Updates" }, { icon: FaUserFriends, text: "Event Tracking" }, { icon: FaTrophy, text: "User-Friendly UI" }].map((feature, index) => (
+                        <div key={index} className="bg-white p-6 rounded-lg shadow-md">
+                            <feature.icon size={40} className="text-yellow-500 mx-auto" />
+                            <p className="mt-4 font-semibold">{feature.text}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Blog Section */}
+            <div id="blog" className="w-4/5 max-w-4xl text-center py-10">
+                <h2 className="text-3xl font-bold">Latest News & Updates</h2>
+                <FaNewspaper size={50} className="text-yellow-500 mx-auto mt-4" />
+            </div>
+
+            {/* Contact Us Section */}
+            <div id="contact" className="w-4/5 max-w-4xl text-center py-10">
+                <h2 className="text-3xl font-bold">Contact Us</h2>
+                <FaEnvelope size={50} className="text-yellow-500 mx-auto mt-4" />
+            </div>
+
+            {/* Footer */}
+            <footer className="w-full bg-black text-white py-4 mt-10 text-center">
+                <p className="text-sm">© 2023 SRM Leaderboard. All rights reserved.</p>
+            </footer>
         </div>
     );
 };
